@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Πλετού – Κολύμβηση</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0b2545">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+:root{
+  --navy:#0b2545; --navy2:#13315c; --aqua:#13c4d6; --aqua2:#0ea5b7; --sky:#eaf5fb;
+  --ink:#1b2a3a; --muted:#6b7c8f; --line:#d8e6ef; --good:#16a34a; --goodbg:#e7f8ee;
+  --bad:#dc2626; --badbg:#fdecec; --gold:#f5b301; --card:#fff;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:var(--sky);color:var(--ink);font-size:15px;line-height:1.4}
+button,input,select,textarea{font:inherit}
+img{display:block}
+.print-only{display:none}
+
+/* ---------- Header ---------- */
+header.top{background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 60%,#1d5c8c 100%);color:#fff;position:relative;overflow:hidden}
+header.top::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:26px;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 40' preserveAspectRatio='none'%3E%3Cpath d='M0 20 Q150 0 300 20 T600 20 T900 20 T1200 20 V40 H0Z' fill='%23eaf5fb'/%3E%3C/svg%3E") no-repeat;background-size:100% 100%}
+.hwrap{max-width:1150px;margin:0 auto;padding:16px 18px 34px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.avatar{width:74px;height:74px;border-radius:50%;object-fit:cover;border:3px solid var(--aqua);background:#1d4b75;flex:none;display:flex;align-items:center;justify-content:center;font-size:34px}
+.htitle{flex:1;min-width:180px}
+.htitle h1{margin:0;font-size:30px;letter-spacing:.5px}
+.htitle h1 span{color:var(--aqua)}
+.htitle .sub{opacity:.85;font-size:14px}
+.hlogos{display:flex;gap:10px;align-items:center}
+.hlogos img{height:52px;max-width:90px;object-fit:contain;background:#fff;border-radius:10px;padding:4px}
+.bk{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);color:#fff;border-radius:999px;padding:6px 12px;font-size:13px;cursor:pointer;white-space:nowrap}
+.bk.warn{background:#f59e0b;border-color:#f59e0b;color:#111}
+.bk.ok{background:#16a34a;border-color:#16a34a}
+
+nav.tabs{position:sticky;top:0;z-index:20;background:var(--sky);border-bottom:1px solid var(--line)}
+.tabsin{max-width:1150px;margin:0 auto;display:flex;gap:4px;overflow-x:auto;padding:8px 12px;scrollbar-width:none}
+.tabsin::-webkit-scrollbar{display:none}
+.tabsin button{border:0;background:transparent;padding:8px 13px;border-radius:999px;cursor:pointer;white-space:nowrap;color:var(--navy2);font-weight:600}
+.tabsin button.on{background:var(--navy);color:#fff}
+.tabsin button:hover:not(.on){background:#d6ebf5}
+
+main{max-width:1150px;margin:0 auto;padding:16px 14px 60px}
+.bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.bar h2{margin:0;font-size:22px;color:var(--navy);flex:1;min-width:160px}
+.btn{border:0;border-radius:10px;padding:9px 14px;cursor:pointer;font-weight:600;background:var(--navy);color:#fff}
+.btn.aqua{background:var(--aqua2)}
+.btn.light{background:#fff;color:var(--navy);border:1px solid var(--line)}
+.btn.red{background:var(--bad)}
+.btn.sm{padding:6px 10px;font-size:13px}
+.ib{border:0;background:transparent;cursor:pointer;font-size:16px;padding:4px 6px;border-radius:8px}
+.ib:hover{background:#e3f0f7}
+
+.card{background:var(--card);border-radius:16px;padding:16px;box-shadow:0 1px 3px rgba(11,37,69,.08);margin-bottom:14px}
+.card h3{margin:0 0 10px;color:var(--navy);font-size:17px}
+.grid{display:grid;gap:14px}
+.g4{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.g2{grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
+.stat{background:#fff;border-radius:16px;padding:14px 16px;box-shadow:0 1px 3px rgba(11,37,69,.08);border-top:4px solid var(--aqua)}
+.stat b{display:block;font-size:28px;color:var(--navy)}
+.stat span{color:var(--muted);font-size:13px}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.filters select,.filters input{padding:7px 10px;border:1px solid var(--line);border-radius:10px;background:#fff}
+
+table.t{width:100%;border-collapse:collapse;background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 1px 3px rgba(11,37,69,.08)}
+table.t th{background:var(--navy);color:#fff;text-align:left;font-weight:600;padding:9px 10px;font-size:13px;white-space:nowrap}
+table.t td{padding:8px 10px;border-top:1px solid var(--line);vertical-align:middle}
+table.t tr:nth-child(even) td{background:#f7fbfd}
+table.t .num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tm{font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+.race{display:flex;align-items:center;gap:8px}
+.olg{width:30px;height:30px;object-fit:contain;flex:none}
+.ph{display:inline-flex;align-items:center;justify-content:center;background:#e3f0f7;border-radius:8px;color:var(--navy2);font-size:10px;font-weight:700}
+.pill{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:600;background:#e3f0f7;color:var(--navy2);white-space:nowrap}
+.pill.p25{background:#fff1d6;color:#8a5a00}
+.star{color:var(--gold)}
+.good{color:var(--good);font-weight:700}
+.bad{color:var(--bad);font-weight:700}
+td.okc{background:var(--goodbg)!important}
+.empty{color:#a7b5c2}
+.sec-title{font-size:16px;font-weight:700;color:var(--navy);margin:18px 0 8px}
+.actions{white-space:nowrap;text-align:right}
+
+/* program */
+.prog{display:flex;gap:14px;align-items:center;background:#fff;border-radius:14px;padding:12px 14px;margin-bottom:10px;box-shadow:0 1px 3px rgba(11,37,69,.08);border-left:5px solid var(--aqua)}
+.prog.past{opacity:.6;border-left-color:#b9c7d3}
+.prog.next{border-left-color:var(--gold);box-shadow:0 0 0 2px var(--gold) inset,0 1px 3px rgba(11,37,69,.08)}
+.pdate{width:74px;text-align:center;flex:none}
+.pdate b{display:block;font-size:24px;color:var(--navy);line-height:1}
+.pdate span{font-size:12px;color:var(--muted);text-transform:uppercase}
+.pbody{flex:1;min-width:0}
+.pbody .nm{font-weight:700;color:var(--navy)}
+.cd{font-size:12px;font-weight:700;padding:3px 9px;border-radius:999px;background:#e3f0f7;color:var(--navy2);white-space:nowrap}
+.prog.next .cd{background:var(--gold);color:#111}
+.plogo{width:44px;height:44px;object-fit:contain;flex:none}
+.pright{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+
+/* hero */
+.hero{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+.hero .big{width:120px;height:120px;border-radius:50%;object-fit:cover;border:4px solid var(--aqua);flex:none;background:#dcecf5;display:flex;align-items:center;justify-content:center;font-size:52px}
+.hero h2{margin:0;color:var(--navy);font-size:26px}
+.nextrace{background:linear-gradient(135deg,#fff7da,#fff);border:1px solid #f3dc8a}
+
+/* chart */
+.chart svg{width:100%;height:auto;display:block}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin-top:6px}
+.legend i{display:inline-block;width:18px;height:3px;vertical-align:middle;margin-right:5px}
+
+/* settings */
+.imgbox{display:flex;align-items:center;gap:12px;padding:10px;border:1px dashed var(--line);border-radius:12px;margin-bottom:10px;background:#fbfdfe}
+.imgbox .pv{width:64px;height:64px;object-fit:contain;border-radius:10px;background:#eef5f9;flex:none;display:flex;align-items:center;justify-content:center;color:#a7b5c2;font-size:24px}
+.imgbox .pv.round{border-radius:50%;object-fit:cover}
+.imgbox .lb{flex:1;min-width:0}
+.orglist{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:8px}
+.orglist .imgbox{margin:0}
+.fld{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted)}
+.fld input,.fld select,.fld textarea{padding:9px 10px;border:1px solid var(--line);border-radius:10px;color:var(--ink);background:#fff;font-size:15px}
+.fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+.fgrid .wide{grid-column:1/-1}
+
+dialog{border:0;border-radius:18px;padding:0;width:min(720px,96vw);max-height:92vh;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+dialog::backdrop{background:rgba(11,37,69,.55)}
+.dlg{padding:18px}
+.dlg h3{margin:0 0 14px;color:var(--navy)}
+.dlgbtns{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;margin-top:16px}
+.ltab input{width:90px;padding:6px;border:1px solid var(--line);border-radius:8px;text-align:right}
+.ltab td,.ltab th{padding:4px}
+
+#toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(120px);background:var(--navy);color:#fff;padding:12px 18px;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.25);transition:transform .3s;z-index:100;max-width:92vw;font-weight:600}
+#toast.show{transform:translateX(-50%) translateY(0)}
+
+/* ---------- Mobile ---------- */
+@media screen and (max-width:720px){
+  .hwrap{padding:12px 14px 30px;gap:10px}
+  .avatar{width:54px;height:54px;font-size:26px}
+  .htitle h1{font-size:24px}
+  .hlogos img{height:38px}
+  table.cards,table.cards tbody,table.cards tr,table.cards td{display:block;width:100%}
+  table.cards thead{display:none}
+  table.cards{background:transparent;box-shadow:none}
+  table.cards tr{background:#fff;border-radius:14px;margin-bottom:10px;padding:8px 12px;box-shadow:0 1px 3px rgba(11,37,69,.08)}
+  table.cards td{border:0;padding:3px 0;background:transparent!important;display:flex;justify-content:space-between;gap:10px;text-align:right}
+  table.cards td::before{content:attr(data-l);color:var(--muted);font-size:12px;text-align:left;flex:none}
+  table.cards td.race-td{display:block;text-align:left;font-weight:600;border-bottom:1px solid var(--line);padding-bottom:6px;margin-bottom:4px}
+  table.cards td.race-td::before{content:none}
+  table.cards td.actions{justify-content:flex-end}
+  table.cards td.actions::before{content:none}
+  table.cards td.okc{background:var(--goodbg)!important;border-radius:6px;padding:3px 6px}
+  .prog{flex-wrap:wrap;gap:8px 12px}
+  .pdate{width:auto;text-align:left;display:flex;align-items:baseline;gap:6px}
+  .pdate b{font-size:20px}
+  .pbody{flex-basis:100%;order:3}
+  .pright{order:2;margin-left:auto;flex-direction:row;align-items:center}
+  .prog .plogo{width:34px;height:34px}
+  .hero .big{width:90px;height:90px}
+}
+
+/* ---------- Print ---------- */
+@media print{
+  @page{margin:10mm}
+  body{background:#fff;font-size:11pt}
+  header.top,nav.tabs,.noprint,.actions,.filters,.bar .btn,#toast{display:none!important}
+  .print-only{display:block}
+  main{padding:0;max-width:none}
+  .card,.stat,table.t,.prog{box-shadow:none;border:1px solid #ccd}
+  table.t th{background:#0b2545!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  td.okc,.prog,.stat{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  tr{break-inside:avoid}
+  .prog{break-inside:avoid}
+  .phead{display:flex;align-items:center;gap:14px;border-bottom:3px solid #0b2545;padding-bottom:8px;margin-bottom:12px}
+  .phead .pph{width:70px;height:70px;border-radius:50%;object-fit:cover;border:2px solid #0b2545}
+  .phead .ptx{flex:1}
+  .phead .ptx b{font-size:18pt;color:#0b2545;display:block}
+  .phead .plg{display:flex;gap:10px}
+  .phead .plg img{height:56px;max-width:90px;object-fit:contain}
+  .pfoot{margin-top:10px;font-size:9pt;color:#666;text-align:right}
+  .recgrid{grid-template-columns:1fr 1fr!important;gap:6mm!important}
+  .recgrid table.t{table-layout:fixed}
+  .recgrid col.c1{width:34%} .recgrid col.c2{width:16%} .recgrid col.c3{width:19%} .recgrid col.c4{width:31%}
+  .recgrid td:first-child{white-space:nowrap}
+  .recgrid table.t th,.recgrid table.t td{padding:5px 5px;font-size:9pt}
+  .recgrid .ph{display:none}
+  .recgrid .olg{width:15px;height:15px;font-size:6pt}
+  .recgrid .race{gap:4px}
+  .recgrid .rname{font-size:8pt;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;min-width:0}
+  .recgrid .race span{min-width:0}
+  .recgrid .sec-title{margin:0 0 4px;font-size:11pt}
+  body.land .recgrid table.t th,body.land .recgrid table.t td{padding:2px 6px;font-size:9pt}
+  body.land .phead{padding-bottom:4px;margin-bottom:6px}
+  body.land .phead .pph{width:52px;height:52px}
+  body.land .phead .plg img{height:44px}
+}
+</style>
+</head>
+<body>
+<header class="top"><div class="hwrap" id="hdr"></div></header>
+<nav class="tabs"><div class="tabsin" id="tabs"></div></nav>
+<main id="main"></main>
+<dialog id="dlg"><div class="dlg" id="dlgin"></div></dialog>
+<div id="toast"></div>
+<input type="file" id="imgIn" accept="image/*" hidden>
+<input type="file" id="bkIn" accept=".json,application/json" hidden>
+
+<script>
+const DATA = {"individual": [], "relays": [], "program": [{"no": 15, "start": "2026-11-07", "end": "2026-11-08", "race": "ΑΓΩΝΑΣ ΚΟΛΥΜΒΗΣΗΣ ΜΙΚΡΩΝ ΑΠΟΣΤΑΣΕΩΝ (25μ.)", "org": "ΚΟΕ", "region": "ΑΤΤΙΚΗΣ", "place": "ΑΘΗΝΑ", "cats": "ΠΡΟΑΓΩΝΙΣΤΙΚΕΣ", "notes": ""}, {"no": 26, "start": "2026-11-13", "end": "2026-11-15", "race": "6ο ΚΥΠΕΛΛΟ ΚΟΛΥΜΒΗΣΗΣ ΤΑΧΥΤΗΤΩΝ - Διασυλλογικός (50μ.)", "org": "ΑΟΝΣ \"ΜΙΛΩΝ\"", "region": "ΑΤΤΙΚΗΣ", "place": "ΑΘΗΝΑ", "cats": "ΑΓΩΝΙΣΤΙΚΕΣ/ΠΡΟΑΓΩΝΙΣΤΙΚΕΣ/ΜΙΝΙ", "notes": ""}, {"no": 34, "start": "2026-11-27", "end": "2026-11-29", "race": "10ο ΤΡΟΠΑΙΟ ΠΑΟ - Διασυλλογικός (50μ.)", "org": "ΠΑΟ", "region": "ΑΤΤΙΚΗΣ", "place": "ΑΘΗΝΑ", "cats": "ΠΡΟΑΓΩΝΙΣΤΙΚΕΣ/ΜΙΝΙ", "notes": ""}, {"no": 46, "start": "2026-12-18", "end": "2026-12-20", "race": "Διασυλλογικός Κολυμβητικός Αγώνας - Διασυλλογικός (50μ.)", "org": "ΠΑΝΙΩΝΙΟΣ", "region": "ΑΤΤΙΚΗΣ", "place": "ΑΘΗΝΑ", "cats": "ΑΓΩΝΙΣΤΙΚΕΣ/ΠΡΟΑΓΩΝΙΣΤΙΚΕΣ/ΜΙΝΙ", "notes": ""}, {"no": 52, "start": "2027-01-15", "end": "2027-01-17", "race": "OKEANOS SWIM MEET - Διεθνής Διασυλλογική συνάντηση (50μ.)", "org": "Ωκεανός", "region": "ΑΤΤΙΚΗΣ", "place": "ΑΘΗΝΑ", "cats": "ΑΓΩΝΙΣΤΙΚΕΣ/ΠΡΟΑΓΩΝΙΣΤΙΚΕΣ", "notes": ""}, {"no": 68, "start": "2027-01-30", "end": "2027-01-30", "race": "CGS SWIM CUP - Διεθνής Διασυλλογικός (50μ.)", "org": "CGS", "region": "ΑΤΤΙΚΗΣ", "place": "ΑΘΗΝΑ", "cats": "ΠΡΟΑΓΩΝΙΣΤΙΚΕΣ/ΜΙΝΙ", "notes": ""}, {"no": 83, "start": "2027-03-05", "end": "2027-03-07", "race": "ΕΑΡΙΝΟΙ ΑΓΩΝΕΣ - ΕΑΡΙΝΟ ΚΥΠΕΛΛΟ ΚΟΛΥΜΒΗΣΗΣ (50μ.)", "org": "ΚΟΕ", "region": "ΑΤΤΙΚΗΣ", "place": "ΑΘΗΝΑ", "cats": "ΠΡΟΑΓΩΝΙΣΤΙΚΕΣ/ΜΙΝΙ", "notes": ""}, {"no": 99, "start": "2027-03-19", "end": "2027-03-21", "race": "ΑΘΛΗΤΙΚΗ ΠΟΡΕΙΑ ΑΠΌ ΤΗΝ ΚΩΝΣΤΑΝΤΙΝΟΥΠΟΛΗ ΣΤΗΝ ΑΘΗΝΑ - Διεθνής διασυλλ. Συναντ. (50μ.)", "org": "Πέρα", "region": "ΑΤΤΙΚΗΣ", "place": "ΑΘΗΝΑ", "cats": "ΑΓΩΝΙΣΤΙΚΕΣ/ΠΡΟΑΓΩΝΙΣΤΙΚΕΣ/ΜΙΝΙ", "notes": ""}, {"no": 116, "start": "2027-04-17", "end": "2027-04-18", "race": "ACROPOLIS JUNIOR 2027 - Διεθνής Συνάντηση (50μ.)", "org": "ΚΟΕ", "region": "ΑΤΤΙΚΗΣ", "place": "ΑΘΗΝΑ", "cats": "ΠΡΟΑΓΩΝΙΣΤΙΚΕΣ", "notes": ""}, {"no": 120, "start": "2027-05-07", "end": "2027-05-09", "race": "6ο SWIM FAMILY CUP 2027 - Διασυλλογικός (50μ.)", "org": "Ηλυσιακός", "region": "ΑΤΤΙΚΗΣ", "place": "ΑΘΗΝΑ", "cats": "ΑΓΩΝΙΣΤΙΚΕΣ/ΠΡΟΑΓΩΝΙΣΤΙΚΕΣ/ΜΙΝΙ/MASTERS", "notes": ""}, {"no": 128, "start": "2027-05-15", "end": "2027-05-16", "race": "ΑΓΩΝΑΣ ΚΟΛΥΜΒΗΣΗΣ - Διασυλλογικός (50μ.)", "org": "ΟΛΥΜΠΙΑΔΑ 73 ΑΙΓΑΛΕΩ", "region": "ΑΤΤΙΚΗΣ", "place": "ΑΘΗΝΑ", "cats": "ΠΡΟΑΓΩΝΙΣΤΙΚΕΣ/ΜΙΝΙ", "notes": ""}, {"no": 135, "start": "2027-05-21", "end": "2027-05-23", "race": "ΑΓΩΝΕΣ ΚΟΛΥΜΒΗΣΗΣ - Διασυλλογικός (50μ.)", "org": "ΑΡΙΩΝ ΦΥΛΗΣ", "region": "ΑΤΤΙΚΗΣ", "place": "ΑΘΗΝΑ", "cats": "ΑΓΩΝΙΣΤΙΚΕΣ/ΠΡΟΑΓΩΝΙΣΤΙΚΕΣ/ΜΙΝΙ", "notes": ""}, {"no": 137, "start": "2027-05-22", "end": "2027-05-23", "race": "ΤΖΕΛΑΤΕΙΑ - Διασυλλογικός (50μ.)", "org": "ΝΟ ΒΟΥΛΙΑΓΜΕΝΗΣ", "region": "ΑΤΤΙΚΗΣ", "place": "ΑΘΗΝΑ", "cats": "ΑΓΩΝΙΣΤΙΚΕΣ/ΠΡΟΑΓΩΝΙΣΤΙΚΕΣ/ΜΙΝΙ", "notes": ""}, {"no": 142, "start": "2027-05-29", "end": "2027-05-30", "race": "ΡΕΣΤΕΙΑ 2027 - Διασυλλογικός (50μ.)", "org": "ΑΟ ΠΑΛΑΙΟΥ ΦΑΛΗΡΟΥ", "region": "ΑΤΤΙΚΗΣ", "place": "ΑΘΗΝΑ", "cats": "ΠΡΟΑΓΩΝΙΣΤΙΚΕΣ/ΜΙΝΙ", "notes": ""}, {"no": 156, "start": "2027-06-19", "end": "2027-06-20", "race": "ΘΕΡΙΝΟΙ ΑΓΩΝΕΣ ΚΟΛΥΜΒΗΣΗΣ (50μ.)", "org": "ΚΟΕ", "region": "ΑΤΤΙΚΗΣ", "place": "ΑΘΗΝΑ", "cats": "ΠΡΟΑΓΩΝΙΣΤΙΚΕΣ 11-12 ΕΤΩΝ", "notes": "Ημερομηνία: 19/6/2027 ή 3/7/2027 – 20/6/2027 ή 4/7/2027"}, {"no": 139, "start": "2027-05-29", "end": "2027-05-30", "race": "29οι ΙΩΝΙΚΟΙ ΑΓΩΝΕΣ ΚΟΛΥΜΒΗΣΗΣ - Διασυλλογικοί (50μ.)", "org": "ΟΕΑΝΑ ΒΟΛΟΥ", "region": "ΘΕΣΣΑΛΙΑΣ", "place": "ΒΟΛΟΣ", "cats": "ΠΡΟΑΓΩΝΙΣΤΙΚΕΣ/ΜΙΝΙ", "notes": ""}, {"no": 157, "start": "2027-06-19", "end": "2027-06-20", "race": "ΘΕΡΙΝΟΙ ΑΓΩΝΕΣ ΚΟΛΥΜΒΗΣΗΣ (50μ.)", "org": "ΚΟΕ", "region": "ΘΕΣΣΑΛΙΑΣ", "place": "ΛΑΡΙΣΑ", "cats": "ΠΡΟΑΓΩΝΙΣΤΙΚΕΣ/ΜΙΝΙ", "notes": ""}], "limits": {"title": "Όρια Επιλέκτων ΚΟΕ 2027", "cols": ["K14 (γεν. 2013) ΕΠΙΛΕΚΤΟΙ Α'", "K13 (γεν. 2014) ΕΠΙΛΕΚΤΟΙ Α'", "K13 (γεν. 2014) ΕΠΙΛΕΚΤΟΙ Β'", "K12 (γεν. 2015) ΕΠΙΛΕΚΤΟΙ Α'", "K12 (γεν. 2015) ΕΠΙΛΕΚΤΟΙ Β'"], "rows": [{"stroke": "Ελεύθερο", "dist": 50, "v": [2850, 2935, 3007, 3119, 3195]}, {"stroke": "Ελεύθερο", "dist": 100, "v": [6220, 6458, 6614, 6862, 7028]}, {"stroke": "Ελεύθερο", "dist": 200, "v": [13556, 14074, 14415, 14954, 15316]}, {"stroke": "Ελεύθερο", "dist": 400, "v": [28691, 29787, 30508, 31649, 32415]}, {"stroke": "Ελεύθερο", "dist": 800, "v": [59006, 61260, 62742, 65089, 66664]}, {"stroke": "Ελεύθερο", "dist": 1500, "v": [112890, 117497, 120953, null, null]}, {"stroke": "Ύπτιο", "dist": 50, "v": [3207, 3356, 3437, 3566, 3652]}, {"stroke": "Ύπτιο", "dist": 100, "v": [6932, 7313, 7487, 7770, 7955]}, {"stroke": "Ύπτιο", "dist": 200, "v": [14946, 15767, 16143, 16753, 17151]}, {"stroke": "Πρόσθιο", "dist": 50, "v": [3556, 3749, 3838, 3983, 4077]}, {"stroke": "Πρόσθιο", "dist": 100, "v": [7733, 8153, 8345, 8662, 8867]}, {"stroke": "Πρόσθιο", "dist": 200, "v": [16873, 17789, 18210, 18901, 19348]}, {"stroke": "Πεταλούδα", "dist": 50, "v": [3003, 3141, 3216, 3338, 3417]}, {"stroke": "Πεταλούδα", "dist": 100, "v": [6743, 7221, 7389, 7672, 7851]}, {"stroke": "Πεταλούδα", "dist": 200, "v": [14942, 15704, 16162, null, null]}, {"stroke": "Μικτή", "dist": 200, "v": [15298, 16002, 16383, 17002, 17407]}, {"stroke": "Μικτή", "dist": 400, "v": [32178, 33820, 34477, null, null]}], "notes": "Επίλεκτοι Α΄ (12-13 ετών): α. 1η έως 3η επίδοση ανά κατηγορία σε οποιοδήποτε ατομικό αγώνισμα. β. Α΄ όριο σε τουλάχιστον 2 ατομικά αγωνίσματα.\nΕπίλεκτοι Β΄: α. Α΄ όριο σε οποιοδήποτε ατομικό αγώνισμα. β. Β΄ όριο σε τουλάχιστον 2 ατομικά αγωνίσματα. γ. Β΄ όριο στα 200μ. Μικτής Ατομικής. δ. Συνδυασμός Β΄ ορίου και έως 15ης επίδοσης σε τουλάχιστον 2 ατομικά. ε. Έως 15η επίδοση σε τουλάχιστον 2 ατομικά αγωνίσματα.\nΕπικαιροποιήσεις 2026-27: 21.12.2026, 1.2.2027, 22.3.2027, 25.4.2027 & 23.5.2027."}, "targets": {"title": "Τελική Φάση ΠΠ Κ13 2026 (17-20/7/2026)", "rows": [{"stroke": "Ελεύθερο", "dist": 50, "lastFinal": 3219, "entrants": 39, "lastA": 2941, "gold": 2806}, {"stroke": "Ελεύθερο", "dist": 100, "lastFinal": 7115, "entrants": 37, "lastA": 6504, "gold": 6141}, {"stroke": "Ελεύθερο", "dist": 200, "lastFinal": 15350, "entrants": 30, "lastA": 14037, "gold": 13123}, {"stroke": "Ελεύθερο", "dist": 400, "lastFinal": 31255, "entrants": 24, "lastA": null, "gold": null}, {"stroke": "Ελεύθερο", "dist": 800, "lastFinal": null, "entrants": null, "lastA": null, "gold": null}, {"stroke": "Ελεύθερο", "dist": 1500, "lastFinal": null, "entrants": null, "lastA": null, "gold": null}, {"stroke": "Ύπτιο", "dist": 50, "lastFinal": 3743, "entrants": 40, "lastA": 3321, "gold": 3236}, {"stroke": "Ύπτιο", "dist": 100, "lastFinal": 8359, "entrants": 40, "lastA": 7256, "gold": 6916}, {"stroke": "Ύπτιο", "dist": 200, "lastFinal": 17695, "entrants": 29, "lastA": 16047, "gold": 14945}, {"stroke": "Πρόσθιο", "dist": 50, "lastFinal": 4217, "entrants": 41, "lastA": null, "gold": null}, {"stroke": "Πρόσθιο", "dist": 100, "lastFinal": 9206, "entrants": 40, "lastA": null, "gold": null}, {"stroke": "Πρόσθιο", "dist": 200, "lastFinal": null, "entrants": null, "lastA": null, "gold": null}, {"stroke": "Πεταλούδα", "dist": 50, "lastFinal": 3625, "entrants": 38, "lastA": 3190, "gold": 3004}, {"stroke": "Πεταλούδα", "dist": 100, "lastFinal": 8385, "entrants": 39, "lastA": 7199, "gold": 6680}, {"stroke": "Πεταλούδα", "dist": 200, "lastFinal": 18789, "entrants": 30, "lastA": 16339, "gold": 15064}, {"stroke": "Μικτή", "dist": 200, "lastFinal": 17314, "entrants": 31, "lastA": 16235, "gold": 15152}, {"stroke": "Μικτή", "dist": 400, "lastFinal": 37428, "entrants": 17, "lastA": null, "gold": null}]}, "athlete": {"first": "", "last": "", "am": "", "born": "", "club": "", "nick": "Πλετού"}};
+const KEY='pletou_v1';
+const STROKES=['Ελεύθερο','Ύπτιο','Πρόσθιο','Πεταλούδα','Μικτή'];
+const DISTS=[25,50,100,200,400,800,1500];
+const EVENTS={50:[['Ελεύθερο',[50,100,200,400,800,1500]],['Ύπτιο',[50,100,200]],['Πρόσθιο',[50,100,200]],['Πεταλούδα',[50,100,200]],['Μικτή',[200,400]]],
+              25:[['Ελεύθερο',[25,50,100,200,400,800,1500]],['Ύπτιο',[25,50,100,200]],['Πρόσθιο',[25,50,100,200]],['Πεταλούδα',[25,50,100,200]],['Μικτή',[100,200,400]]]};
+const TABS=[['home','🏠 Αρχική'],['ind','🏊‍♀️ Ατομικά'],['rel','🤝 Ομαδικά'],['rec','⭐ Ρεκόρ'],['lim','🎯 Όρια Επιλέκτων'],['tg','🏆 Στόχοι ΠΠ'],['prog','📈 Πρόοδος'],['cal','📅 Πρόγραμμα'],['set','⚙️ Ρυθμίσεις']];
+const MONTHS=['Ιαν','Φεβ','Μαρ','Απρ','Μάι','Ιουν','Ιουλ','Αυγ','Σεπ','Οκτ','Νοε','Δεκ'];
+
+let S, tab='home';
+const FSA=typeof window.showOpenFilePicker==='function';
+let fileHandle=null, filePerm='none';
+let F={pool:'',stroke:'',dist:'',q:'',year:''};
+let chartSel=null;
+
+/* ---------- helpers ---------- */
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pad=n=>String(n).padStart(2,'0');
+const norm=s=>String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toUpperCase().replace(/\s+/g,' ').trim();
+function fmtT(cs){ if(cs==null||isNaN(cs)) return '—'; const m=Math.floor(cs/6000), s=Math.floor(cs%6000/100), c=cs%100; return m?`${m}:${pad(s)},${pad(c)}`:`${s},${pad(c)}`; }
+function fmtDiff(d){ if(d==null||isNaN(d)) return '—'; const sg=d>0?'+':d<0?'−':''; return sg+fmtT(Math.abs(d)); }
+function parseT(s){
+  s=String(s||'').trim(); if(!s) return null;
+  const p=s.split(/[:.,΄'"\s]+/).filter(Boolean);
+  if(!p.length||!p.every(x=>/^\d+$/.test(x))) return NaN;
+  let m=0,sec,c;
+  if(p.length===3){m=+p[0];sec=+p[1];c=p[2]; if(sec>=60) return NaN;}
+  else if(p.length===2){sec=+p[0];c=p[1];}
+  else if(p.length===1){sec=+p[0];c='0';}
+  else return NaN;
+  c=c.length===1?(+c)*10:+c.slice(0,2);
+  return m*6000+sec*100+c;
+}
+function fmtDate(d){ if(!d) return ''; const [y,m,dd]=d.split('-'); return `${+dd}/${+m}/${y}`; }
+const todayISO=()=>{const t=new Date();return `${t.getFullYear()}-${pad(t.getMonth()+1)}-${pad(t.getDate())}`};
+const daysBetween=(a,b)=>Math.round((Date.parse(b)-Date.parse(a))/864e5);
+const evName=(r)=>`${r.dist}μ ${r.stroke}`;
+const ekey=(pool,stroke,dist)=>pool+'|'+stroke+'|'+dist;
+function toast(msg,ms=3200){const t=document.getElementById('toast');t.innerHTML=msg;t.classList.add('show');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('show'),ms);}
+
+/* ---------- storage ---------- */
+function fresh(){
+  const d=JSON.parse(JSON.stringify(DATA));
+  d.individual.forEach(x=>x.id=uid()); d.relays.forEach(x=>x.id=uid()); d.program.forEach(x=>x.id=uid());
+  return {app:'Pletou',v:1,athlete:d.athlete,images:{},orgLogos:{},orgsExtra:[],individual:d.individual,relays:d.relays,program:d.program,
+          limits:d.limits,targets:d.targets,settings:{limA:3,limB:4},lastBackup:null,dirty:true,savedAt:''};
+}
+function load(){
+  try{const t=localStorage.getItem(KEY); if(t){S=JSON.parse(t); S.settings=S.settings||{limA:3,limB:4}; S.orgsExtra=S.orgsExtra||[]; S.images=S.images||{}; S.orgLogos=S.orgLogos||{}; S.program=S.program.filter(p=>!(p.race==='Αγώνας'&&p.org==='Διοργανωτής')); return;}}catch(e){}
+  S=fresh(); persist();
+}
+function persist(){
+  try{localStorage.setItem(KEY,JSON.stringify(S)); return true;}
+  catch(e){alert('⚠️ Δεν ήταν δυνατή η αποθήκευση. Ίσως οι φωτογραφίες είναι πολλές/μεγάλες. Κάνε «Αρχείο ασφαλείας» και αφαίρεσε κάποια φωτογραφία.'); return false;}
+}
+function save(){ S.dirty=true; S.savedAt=new Date().toISOString(); persist(); scheduleWrite(); renderHeader(); }
+try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist();}catch(e){}
+
+/* ---------- derived ---------- */
+function records(){
+  const R={};
+  for(const r of S.individual){ if(!r.time) continue; const k=ekey(r.pool,r.stroke,r.dist);
+    if(!R[k]||r.time<R[k].time||(r.time===R[k].time&&r.date<R[k].date)) R[k]=r; }
+  return R;
+}
+function pbFlags(){ // ids that were a personal best at the time (not first swim)
+  const best={}, pb=new Set();
+  [...S.individual].filter(r=>r.time).sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:0).forEach(r=>{
+    const k=ekey(r.pool,r.stroke,r.dist);
+    if(best[k]!=null&&r.time<best[k]) pb.add(r.id);
+    if(best[k]==null||r.time<best[k]) best[k]=r.time;
+  });
+  return pb;
+}
+function orgNames(){
+  const m=new Map();
+  [...S.individual,...S.relays,...S.program].forEach(r=>{if(r.org&&!m.has(norm(r.org))) m.set(norm(r.org),r.org);});
+  S.orgsExtra.forEach(o=>{if(!m.has(norm(o))) m.set(norm(o),o);});
+  if(!m.has('ΚΟΕ')) m.set('ΚΟΕ','ΚΟΕ');
+  return [...m.values()].sort((a,b)=>a.localeCompare(b,'el'));
+}
+function orgLogo(name){ const n=norm(name); if(!n) return null; return S.orgLogos[n]||(n==='ΚΟΕ'?S.images.koe:null)||null; }
+function orgImg(name,cls='olg'){
+  const l=orgLogo(name);
+  if(l) return `<img class="${cls}" src="${l}" alt="${esc(name)}" title="${esc(name)}">`;
+  const ab=esc(String(name||'?').slice(0,4));
+  return `<span class="${cls} ph" title="${esc(name)}">${ab}</span>`;
+}
+function uniq(arr,f){return [...new Set(arr.map(f).filter(Boolean))].sort((a,b)=>String(a).localeCompare(String(b),'el'));}
+function currentCat(){ const s=[...S.individual].sort((a,b)=>a.date<b.date?1:-1); return s[0]?.cat||''; }
+function fullName(){ return `${S.athlete.first||''} ${S.athlete.last||''}`.trim(); }
+
+/* ---------- header / tabs ---------- */
+function renderHeader(){
+  const a=S.athlete, im=S.images;
+  let bk;
+  if(fileHandle&&filePerm==='granted') bk=`<button class="bk ok noprint" data-tab="set">☁️ ${esc(fileHandle.name)} ${S.dirty?'· αποθήκευση…':'✓'}</button>`;
+  else if(fileHandle) bk=`<button class="bk warn noprint" data-act="reconnect">🔗 Πάτα εδώ για σύνδεση με το Drive</button>`;
+  else if(FSA) bk=`<button class="bk warn noprint" data-tab="set">🔗 Σύνδεσε το αρχείο του Drive</button>`;
+  else bk = S.dirty
+    ? `<button class="bk warn noprint" data-act="backup">⚠️ Αλλαγές χωρίς αρχείο ασφαλείας – πάτα εδώ 💾</button>`
+    : `<button class="bk noprint" data-act="openfile">📂 Άνοιγμα αρχείου</button>`;
+  document.getElementById('hdr').innerHTML=`
+    ${im.photo?`<img class="avatar" src="${im.photo}" alt="">`:`<div class="avatar">🏊‍♀️</div>`}
+    <div class="htitle"><h1><span>${esc(a.nick||'Πλετού')}</span></h1>
+      <div class="sub">${[fullName(),a.club,a.am?'ΑΜ '+a.am:''].filter(Boolean).map(esc).join(' · ')}</div></div>
+    <div class="hlogos">${im.club?`<img src="${im.club}" alt="σωματείο" title="${esc(a.club)}">`:''}${im.koe?`<img src="${im.koe}" alt="ΚΟΕ" title="ΚΟΕ">`:''}</div>
+    ${bk}`;
+}
+function renderTabs(){
+  document.getElementById('tabs').innerHTML=TABS.map(([k,l])=>`<button class="${k===tab?'on':''}" data-tab="${k}">${l}</button>`).join('');
+}
+function printHead(title){
+  const a=S.athlete, im=S.images;
+  return `<div class="print-only"><div class="phead">
+    ${im.photo?`<img class="pph" src="${im.photo}">`:''}
+    <div class="ptx"><b>${esc(fullName())}</b>${esc(a.club||'')}${a.am?' · ΑΜ '+esc(a.am):''}${a.born?' · Γεν. '+esc(a.born):''}<br><span style="font-size:13pt;color:#0b2545;font-weight:700">${esc(title)}</span></div>
+    <div class="plg">${im.club?`<img src="${im.club}">`:''}${im.koe?`<img src="${im.koe}">`:''}</div>
+  </div></div>`;
+}
+const printFoot=()=>`<div class="print-only pfoot">Πλετού · Εκτύπωση ${fmtDate(todayISO())}</div>`;
+function bar(title,btns=''){return `<div class="bar"><h2>${title}</h2>${btns}<button class="btn light" data-act="print" data-o="portrait">🖨️ Όρθια</button><button class="btn light" data-act="print" data-o="landscape">🖨️ Οριζόντια</button></div>`;}
+
+function render(){
+  renderHeader(); renderTabs();
+  const m=document.getElementById('main');
+  const fn={home:vHome,ind:vInd,rel:vRel,rec:vRec,lim:vLim,tg:vTg,prog:vProg,cal:vCal,set:vSet}[tab];
+  m.innerHTML=fn();
+}
+
+/* ---------- HOME ---------- */
+function vHome(){
+  if(!S.individual.length&&!S.relays.length) return `<div class="card" style="text-align:center;padding:30px 18px">
+    <div style="font-size:60px">🏊‍♀️</div><h2 style="color:var(--navy);margin:6px 0">Καλώς ήρθες στο Πλετού!</h2>
+    <p class="muted">Για να δεις τα αποτελέσματα, άνοιξε το αρχείο <b>Pletou_asfaleias.json</b> από το Google Drive.</p>
+    <button class="btn" data-act="openfile" style="font-size:17px;padding:12px 20px">📂 Άνοιγμα αρχείου</button>
+    ${FSA?`<p class="small muted" style="margin-top:14px">Στον υπολογιστή μπορείς και να το <a href="#" data-tab="set">συνδέσεις μόνιμα</a> από τις Ρυθμίσεις.</p>`:''}</div>`;
+  const R=records(), today=todayISO();
+  const recCount=Object.keys(R).length;
+  const races=new Set(S.individual.map(r=>r.date.slice(0,7)+'|'+norm(r.race))).size;
+  const lim=limitRows(); const aOk=lim.filter(x=>x.dA!=null&&x.dA<=0).length, bOk=lim.filter(x=>x.dB!=null&&x.dB<=0).length;
+  const next=[...S.program].filter(p=>(p.end||p.start)>=today).sort((a,b)=>a.start<b.start?-1:1)[0];
+  const sorted=[...S.individual].sort((a,b)=>a.date<b.date?1:-1);
+  const lastDate=sorted[0]?.date; const lastRace=sorted[0]?.race;
+  const last=sorted.filter(r=>r.race===lastRace&&daysBetween(r.date,lastDate)<=3);
+  const pb=pbFlags();
+  const recent=Object.values(R).sort((a,b)=>a.date<b.date?1:-1).slice(0,6);
+  const im=S.images;
+  let h=printHead('Σύνοψη')+`
+  <div class="card hero">
+    ${im.photo?`<img class="big" src="${im.photo}">`:`<div class="big">🏊‍♀️</div>`}
+    <div style="flex:1;min-width:200px"><h2>${esc(fullName())}</h2>
+      <div class="muted">${esc(S.athlete.club||'')} · ${esc(currentCat())}${S.athlete.am?' · ΑΜ '+esc(S.athlete.am):''}</div>
+      ${!im.photo?`<div class="small noprint" style="margin-top:6px">📸 <a href="#" data-tab="set">Ανέβασε φωτογραφία από τις Ρυθμίσεις</a></div>`:''}
+    </div>
+    <div class="noprint" style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn aqua" data-act="addInd">+ Νέο αποτέλεσμα</button><button class="btn light" data-act="print" data-o="portrait">🖨️ Εκτύπωση</button></div>
+  </div>
+  <div class="grid g4" style="margin-bottom:14px">
+    <div class="stat"><b>${races}</b><span>Αγώνες</span></div>
+    <div class="stat"><b>${S.individual.length}</b><span>Ατομικές κούρσες</span></div>
+    <div class="stat"><b>${S.relays.length}</b><span>Σκυταλοδρομίες</span></div>
+    <div class="stat"><b>${recCount}</b><span>Αγωνίσματα με ρεκόρ</span></div>
+    <div class="stat" style="border-top-color:var(--gold)"><b>${aOk} / ${bOk}</b><span>Όρια Α΄ / Β΄ που πέτυχε</span></div>
+  </div>
+  <div class="grid g2">`;
+  if(next){ const dd=daysBetween(today,next.start);
+    h+=`<div class="card nextrace"><h3>📅 Επόμενος αγώνας</h3>
+      <div class="race">${orgImg(next.org,'plogo')}<div><div style="font-weight:700">${esc(next.race)}</div>
+      <div class="muted small">${fmtDate(next.start)}${next.end&&next.end!==next.start?' – '+fmtDate(next.end):''} · ${esc(next.place)} · ${esc(next.org)}</div></div></div>
+      <div style="margin-top:10px;font-size:20px;font-weight:800;color:var(--navy)">${dd<=0?'Σήμερα! 💪':dd===1?'Αύριο! 💪':'σε '+dd+' μέρες'}</div></div>`;
+  }
+  if(last.length){
+    h+=`<div class="card"><h3>🏁 Τελευταίος αγώνας</h3><div class="race" style="margin-bottom:8px">${orgImg(last[0].org)}<div><b>${esc(last[0].race)}</b><div class="muted small">${fmtDate(last[last.length-1].date)} · ${esc(last[0].venue)} · Πισίνα ${last[0].pool}μ</div></div></div>
+    <table class="t">${last.slice().reverse().map(r=>`<tr><td>${evName(r)}</td><td class="num tm">${fmtT(r.time)} ${R[ekey(r.pool,r.stroke,r.dist)]===r?'<span class="star" title="Ρεκόρ">⭐</span>':pb.has(r.id)?'🔹':''}</td><td class="num">${r.place?r.place+'η':''}${r.entries?' / '+r.entries:''}</td></tr>`).join('')}</table></div>`;
+  }
+  h+=`<div class="card"><h3>⭐ Πιο πρόσφατα ρεκόρ</h3><table class="t">${recent.map(r=>`<tr><td>${evName(r)} <span class="pill ${r.pool==25?'p25':''}">${r.pool}μ</span></td><td class="num tm">${fmtT(r.time)}</td><td class="num muted small">${fmtDate(r.date)}</td></tr>`).join('')}</table></div>`;
+  h+=`</div>`+printFoot();
+  return h;
+}
+
+/* ---------- INDIVIDUAL ---------- */
+function filteredInd(){
+  return S.individual.filter(r=>(!F.pool||r.pool==F.pool)&&(!F.stroke||r.stroke===F.stroke)&&(!F.dist||r.dist==F.dist)&&(!F.year||r.date.startsWith(F.year))
+    &&(!F.q||norm(r.race+' '+r.org+' '+r.venue+' '+r.cat+' '+r.notes).includes(norm(F.q))))
+    .sort((a,b)=>a.date<b.date?1:a.date>b.date?-1:0);
+}
+function vInd(){
+  const R=records(), pb=pbFlags(), rows=filteredInd();
+  const years=uniq(S.individual,r=>r.date.slice(0,4)).reverse();
+  const opt=(v,cur,l)=>`<option value="${v}" ${String(cur)===String(v)?'selected':''}>${l??v}</option>`;
+  let h=printHead('Ατομικά αποτελέσματα')+bar('Ατομικά αποτελέσματα',`<button class="btn aqua" data-act="addInd">+ Νέο αποτέλεσμα</button>`)+`
+  <div class="filters">
+    <select data-f="pool">${opt('',F.pool,'Όλες οι πισίνες')}${opt(50,F.pool,'Πισίνα 50μ')}${opt(25,F.pool,'Πισίνα 25μ')}</select>
+    <select data-f="stroke">${opt('',F.stroke,'Όλα τα στυλ')}${STROKES.map(s=>opt(s,F.stroke)).join('')}</select>
+    <select data-f="dist">${opt('',F.dist,'Όλα τα μέτρα')}${DISTS.map(d=>opt(d,F.dist,d+'μ')).join('')}</select>
+    <select data-f="year">${opt('',F.year,'Όλα τα έτη')}${years.map(y=>opt(y,F.year)).join('')}</select>
+    <input data-f="q" placeholder="🔎 Αναζήτηση αγώνα..." value="${esc(F.q)}">
+  </div>
+  <div class="muted small" style="margin-bottom:8px">${rows.length} κούρσες · ⭐ = τωρινό ρεκόρ · 🔹 = ήταν ρεκόρ τότε (βελτίωση)</div>
+  <table class="t cards"><thead><tr><th>Ημ/νία</th><th>Αγώνας</th><th>Κατηγορία</th><th>Πισίνα</th><th>Αγώνισμα</th><th class="num">Χρόνος</th><th class="num">Θέση</th><th>Παρατηρήσεις</th><th class="actions"></th></tr></thead><tbody>`;
+  for(const r of rows){
+    const isRec=R[ekey(r.pool,r.stroke,r.dist)]===r;
+    h+=`<tr><td data-l="Ημ/νία">${fmtDate(r.date)}</td>
+      <td class="race-td" data-l="Αγώνας"><div class="race">${orgImg(r.org)}<span>${esc(r.race)}<div class="muted small">${esc(r.org)} · ${esc(r.venue)}</div></span></div></td>
+      <td data-l="Κατηγορία">${esc(r.cat)}</td>
+      <td data-l="Πισίνα"><span class="pill ${r.pool==25?'p25':''}">${r.pool}μ</span></td>
+      <td data-l="Αγώνισμα"><b>${evName(r)}</b></td>
+      <td class="num tm" data-l="Χρόνος"><span>${fmtT(r.time)} ${isRec?'<span class="star">⭐</span>':pb.has(r.id)?'🔹':''}</span></td>
+      <td class="num" data-l="Θέση">${r.place?r.place+'η':''}${r.entries?' / '+r.entries:''}</td>
+      <td data-l="Παρατηρήσεις" class="small">${esc(r.notes)}</td>
+      <td class="actions"><button class="ib" data-act="editInd" data-id="${r.id}" title="Διόρθωση">✏️</button><button class="ib" data-act="delInd" data-id="${r.id}" title="Διαγραφή">🗑️</button></td></tr>`;
+  }
+  h+=`</tbody></table>`+printFoot();
+  return h;
+}
+function dl(id,vals){return `<datalist id="${id}">${vals.map(v=>`<option value="${esc(v)}">`).join('')}</datalist>`;}
+function indForm(r){
+  const isNew=!r.id;
+  const sel=(name,vals,cur,lab)=>`<select name="${name}">${vals.map(v=>`<option value="${v}" ${String(v)===String(cur)?'selected':''}>${lab?lab(v):v}</option>`).join('')}</select>`;
+  openDlg(`<form id="frm"><h3>${isNew?'➕ Νέο ατομικό αποτέλεσμα':'✏️ Διόρθωση αποτελέσματος'}</h3>
+   <div class="fgrid">
+    <label class="fld">Ημερομηνία<input type="date" name="date" required value="${r.date||todayISO()}"></label>
+    <label class="fld">Κατηγορία<input name="cat" list="dl-cat" value="${esc(r.cat??currentCat())}"></label>
+    <label class="fld wide">Αγώνας<input name="race" list="dl-race" required value="${esc(r.race||'')}" placeholder="Γράψε ή διάλεξε από τη λίστα"></label>
+    <label class="fld">Διοργανωτής<input name="org" list="dl-org" value="${esc(r.org||'')}"></label>
+    <label class="fld">Εγκατάσταση<input name="venue" list="dl-venue" value="${esc(r.venue||'')}"></label>
+    <label class="fld">Πισίνα${sel('pool',[50,25],r.pool||50,v=>v+'μ')}</label>
+    <label class="fld">Στυλ${sel('stroke',STROKES,r.stroke||'Ελεύθερο')}</label>
+    <label class="fld">Μέτρα${sel('dist',DISTS,r.dist||50,v=>v+'μ')}</label>
+    <label class="fld">Χρόνος<input name="time" inputmode="decimal" value="${r.time?fmtT(r.time):''}" placeholder="π.χ. 37,46 ή 1:24,41"></label>
+    <label class="fld">Θέση<input name="place" type="number" min="1" value="${r.place??''}"></label>
+    <label class="fld">Συμμετοχές<input name="entries" type="number" min="1" value="${r.entries??''}"></label>
+    <label class="fld wide">Παρατηρήσεις<input name="notes" value="${esc(r.notes||'')}" placeholder="π.χ. Τελικός, Άκυρη εκκίνηση..."></label>
+   </div>
+   ${dl('dl-cat',uniq(S.individual,x=>x.cat))}${dl('dl-race',uniq([...S.individual,...S.program],x=>x.race))}${dl('dl-org',orgNames())}${dl('dl-venue',uniq(S.individual,x=>x.venue))}
+   <div class="dlgbtns"><button type="button" class="btn light" data-act="close">Ακύρωση</button>
+   ${isNew?`<button type="submit" class="btn aqua" name="more" value="1">💾 Αποθήκευση & επόμενο αγώνισμα</button>`:''}
+   <button type="submit" class="btn">💾 Αποθήκευση</button></div></form>`);
+  const f=document.getElementById('frm');
+  f.race.addEventListener('change',()=>{
+    const m=[...S.individual].filter(x=>x.race===f.race.value).sort((a,b)=>a.date<b.date?1:-1)[0];
+    if(m){ if(!f.org.value) f.org.value=m.org; if(!f.venue.value) f.venue.value=m.venue; f.pool.value=m.pool; return; }
+    const p=S.program.find(x=>x.race===f.race.value);
+    if(p){ if(!f.org.value) f.org.value=p.org; f.date.value=p.start; const pm=p.race.match(/\((\d+)μ/); if(pm) f.pool.value=pm[1]; }
+  });
+  f.onsubmit=e=>{
+    e.preventDefault();
+    const more=e.submitter&&e.submitter.name==='more';
+    const t=parseT(f.time.value);
+    if(Number.isNaN(t)){alert('Ο χρόνος δεν είναι σωστός. Γράψε π.χ. 37,46 ή 1:24,41');f.time.focus();return;}
+    const o={date:f.date.value,cat:f.cat.value.trim(),race:f.race.value.trim(),org:f.org.value.trim(),venue:f.venue.value.trim(),
+      pool:+f.pool.value,stroke:f.stroke.value,dist:+f.dist.value,time:t,place:f.place.value?+f.place.value:null,entries:f.entries.value?+f.entries.value:null,notes:f.notes.value.trim()};
+    const before=records()[ekey(o.pool,o.stroke,o.dist)];
+    if(isNew){o.id=uid();S.individual.push(o);} else Object.assign(r,o);
+    save();
+    if(t&&(!before||t<before.time)&&(isNew||before!==r)){
+      toast(before?`🎉 ΝΕΟ ΡΕΚΟΡ! ${evName(o)} (${o.pool}μ): ${fmtT(t)} · βελτίωση ${fmtT(before.time-t)}`:`⭐ Πρώτη φορά ${evName(o)} (${o.pool}μ): ${fmtT(t)}`,4500);
+    } else toast('✔ Αποθηκεύτηκε');
+    if(more){ indForm({date:o.date,cat:o.cat,race:o.race,org:o.org,venue:o.venue,pool:o.pool,stroke:o.stroke,dist:o.dist}); render(); setTimeout(()=>document.getElementById('frm').stroke.focus(),50); }
+    else {closeDlg(); render();}
+  };
+}
+
+/* ---------- RELAYS ---------- */
+function vRel(){
+  const rows=[...S.relays].sort((a,b)=>a.date<b.date?1:-1);
+  let h=printHead('Ομαδικά – Σκυταλοδρομίες')+bar('Ομαδικά – Σκυταλοδρομίες',`<button class="btn aqua" data-act="addRel">+ Νέα σκυταλοδρομία</button>`)+`
+  <table class="t cards"><thead><tr><th>Ημ/νία</th><th>Αγώνας</th><th>Πισίνα</th><th>Αγώνισμα</th><th class="num">Χρόνος</th><th class="num">Θέση</th><th>Ομάδα</th><th class="actions"></th></tr></thead><tbody>`;
+  for(const r of rows){
+    h+=`<tr><td data-l="Ημ/νία">${fmtDate(r.date)}</td>
+    <td class="race-td" data-l="Αγώνας"><div class="race">${orgImg(r.org)}<span>${esc(r.race)}<div class="muted small">${esc(r.org)} · ${esc(r.venue)} · ${esc(r.cat)}</div></span></div></td>
+    <td data-l="Πισίνα"><span class="pill ${r.pool==25?'p25':''}">${r.pool}μ</span></td>
+    <td data-l="Αγώνισμα"><span><b>${esc(r.event)}</b> <span class="muted small">${esc(r.relcat)}</span></span></td>
+    <td class="num tm" data-l="Χρόνος">${fmtT(r.time)}</td>
+    <td class="num" data-l="Θέση">${r.place?(r.place===1?'🥇 ':r.place===2?'🥈 ':r.place===3?'🥉 ':'')+r.place+'η':''}${r.entries?' / '+r.entries:r.entriesNote?' / '+esc(r.entriesNote):''}</td>
+    <td data-l="Ομάδα" class="small">${esc(r.team)}</td>
+    <td class="actions"><button class="ib" data-act="editRel" data-id="${r.id}">✏️</button><button class="ib" data-act="delRel" data-id="${r.id}">🗑️</button></td></tr>`;
+  }
+  return h+`</tbody></table>`+printFoot();
+}
+function relForm(r){
+  const isNew=!r.id;
+  openDlg(`<form id="frm"><h3>${isNew?'➕ Νέα σκυταλοδρομία':'✏️ Διόρθωση σκυταλοδρομίας'}</h3><div class="fgrid">
+    <label class="fld">Ημερομηνία<input type="date" name="date" required value="${r.date||todayISO()}"></label>
+    <label class="fld">Κατηγορία<input name="cat" list="dl-cat" value="${esc(r.cat??currentCat())}"></label>
+    <label class="fld wide">Αγώνας<input name="race" list="dl-race" required value="${esc(r.race||'')}"></label>
+    <label class="fld">Διοργανωτής<input name="org" list="dl-org" value="${esc(r.org||'')}"></label>
+    <label class="fld">Εγκατάσταση<input name="venue" list="dl-venue" value="${esc(r.venue||'')}"></label>
+    <label class="fld">Πισίνα<select name="pool"><option value="50" ${r.pool!=25?'selected':''}>50μ</option><option value="25" ${r.pool==25?'selected':''}>25μ</option></select></label>
+    <label class="fld">Αγώνισμα<input name="event" list="dl-ev" required value="${esc(r.event||'')}" placeholder="π.χ. 4Χ50 Ελεύθερο"></label>
+    <label class="fld">Κατηγ. σκυτάλης<input name="relcat" value="${esc(r.relcat||'')}" placeholder="π.χ. Κ12"></label>
+    <label class="fld">Χρόνος<input name="time" value="${r.time?fmtT(r.time):''}" placeholder="π.χ. 2:45,86"></label>
+    <label class="fld">Θέση<input name="place" type="number" min="1" value="${r.place??''}"></label>
+    <label class="fld">Συμμετοχές<input name="entries" type="number" min="1" value="${r.entries??''}"></label>
+    <label class="fld wide">Ομάδα (με τη σειρά)<textarea name="team" rows="2">${esc(r.team||'')}</textarea></label>
+  </div>${dl('dl-cat',uniq([...S.individual,...S.relays],x=>x.cat))}${dl('dl-race',uniq([...S.individual,...S.relays,...S.program],x=>x.race))}${dl('dl-org',orgNames())}${dl('dl-venue',uniq([...S.individual,...S.relays],x=>x.venue))}${dl('dl-ev',uniq(S.relays,x=>x.event))}
+  <div class="dlgbtns"><button type="button" class="btn light" data-act="close">Ακύρωση</button><button class="btn">💾 Αποθήκευση</button></div></form>`);
+  const f=document.getElementById('frm');
+  f.onsubmit=e=>{e.preventDefault();
+    const t=parseT(f.time.value); if(Number.isNaN(t)){alert('Ο χρόνος δεν είναι σωστός. Γράψε π.χ. 2:45,86');return;}
+    const o={date:f.date.value,cat:f.cat.value.trim(),race:f.race.value.trim(),org:f.org.value.trim(),venue:f.venue.value.trim(),pool:+f.pool.value,event:f.event.value.trim(),relcat:f.relcat.value.trim(),time:t,place:f.place.value?+f.place.value:null,entries:f.entries.value?+f.entries.value:null,team:f.team.value.trim()};
+    if(isNew){o.id=uid();S.relays.push(o);} else {delete r.entriesNote; Object.assign(r,o);}
+    save(); closeDlg(); render(); toast('✔ Αποθηκεύτηκε');};
+}
+
+/* ---------- RECORDS ---------- */
+function vRec(){
+  const R=records();
+  const hide=!!S.settings.hideEmpty;
+  let h=printHead('Ατομικά ρεκόρ')+bar('⭐ Ατομικά ρεκόρ')+`<div class="muted small noprint" style="margin-bottom:10px">Υπολογίζονται αυτόματα από τα ατομικά αποτελέσματα. · <label style="cursor:pointer"><input type="checkbox" data-act="toggleEmpty" ${hide?'checked':''}> Κρύψε τα αγωνίσματα χωρίς χρόνο</label></div><div class="grid g2 recgrid">`;
+  for(const pool of [50,25]){
+    h+=`<div><div class="sec-title">Πισίνα ${pool}μ</div><table class="t cards"><colgroup><col class="c1"><col class="c2"><col class="c3"><col class="c4"></colgroup><thead><tr><th>Αγώνισμα</th><th class="num">Χρόνος</th><th>Ημ/νία</th><th>Αγώνας</th></tr></thead><tbody>`;
+    const evs=[]; EVENTS[pool].forEach(([s,ds])=>ds.forEach(d=>evs.push([s,d])));
+    Object.values(R).filter(r=>r.pool==pool&&!evs.some(([s,d])=>s===r.stroke&&d==r.dist)).forEach(r=>evs.push([r.stroke,r.dist]));
+    for(const [s,d] of evs){ const r=R[ekey(pool,s,d)];
+      h+=r?`<tr><td data-l="Αγώνισμα"><b>${d}μ ${s}</b></td><td class="num tm" data-l="Χρόνος">${fmtT(r.time)}</td><td data-l="Ημ/νία">${fmtDate(r.date)}</td><td data-l="Αγώνας"><div class="race">${orgImg(r.org)}<span class="small rname">${esc(r.race)}</span></div></td></tr>`
+          :hide?'':`<tr class="noprint-empty"><td data-l="Αγώνισμα" class="empty">${d}μ ${s}</td><td class="num empty" data-l="Χρόνος">—</td><td></td><td></td></tr>`;
+    }
+    h+=`</tbody></table></div>`;
+  }
+  return h+`</div>`+printFoot();
+}
+
+/* ---------- LIMITS ---------- */
+function limitRows(){
+  const R=records(), L=S.limits, a=S.settings.limA, b=S.settings.limB;
+  return L.rows.map(x=>{ const r=R[ekey(50,x.stroke,x.dist)]; const t=r?.time??null;
+    const A=x.v[a]||null, B=b>=0?x.v[b]||null:null;
+    return {...x,rec:r,t,A,B,dA:t&&A?t-A:null,dB:t&&B?t-B:null}; });
+}
+function vLim(){
+  const L=S.limits, a=S.settings.limA, b=S.settings.limB, rows=limitRows();
+  const sel=(k,cur,allowNone)=>`<select data-lim="${k}">${allowNone?`<option value="-1" ${cur<0?'selected':''}>— κανένα —</option>`:''}${L.cols.map((c,i)=>`<option value="${i}" ${i===cur?'selected':''}>${esc(c)}</option>`).join('')}</select>`;
+  const aOk=rows.filter(x=>x.dA!=null&&x.dA<=0).length, bOk=rows.filter(x=>x.dB!=null&&x.dB<=0).length;
+  const dcell=(d)=>d==null?'<td class="num empty">—</td>':`<td class="num ${d<=0?'good okc':'bad'}" data-l="">${d<=0?'✅ ':''}${fmtDiff(d)}</td>`;
+  let h=printHead(L.title)+bar('🎯 '+esc(L.title),`<button class="btn light" data-act="editLim">✏️ Αλλαγή ορίων</button>`)+`
+   <div class="filters noprint"><label class="small">Όριο Α: ${sel('limA',a)}</label><label class="small">Όριο Β: ${sel('limB',b,true)}</label></div>
+   <div class="print-only small">Όριο Α: ${esc(L.cols[a])}${b>=0?' · Όριο Β: '+esc(L.cols[b]):''}</div>
+   <div class="grid g4" style="margin-bottom:12px"><div class="stat"><b>${aOk}</b><span>Όρια Α΄ που πέτυχε</span></div><div class="stat"><b>${bOk}</b><span>Όρια Β΄ που πέτυχε</span></div></div>
+   <div class="muted small" style="margin-bottom:8px">Συγκρίνονται τα ρεκόρ σε πισίνα 50μ. Διαφορά «+» = πόσο πιο αργή είναι ακόμα από το όριο · «−» = πιο γρήγορη ✅</div>
+   <table class="t cards"><thead><tr><th>Αγώνισμα</th><th class="num">Όριο Α</th><th class="num">Όριο Β</th><th class="num">${esc(S.athlete.first||'Δανάη')}</th><th>Ημ/νία</th><th class="num">Διαφορά Α</th><th class="num">Διαφορά Β</th></tr></thead><tbody>`;
+  for(const x of rows){
+    h+=`<tr><td data-l="Αγώνισμα"><b>${x.dist}μ ${x.stroke}</b></td><td class="num" data-l="Όριο Α">${fmtT(x.A)}</td><td class="num" data-l="Όριο Β">${fmtT(x.B)}</td>
+     <td class="num tm" data-l="${esc(S.athlete.first||'Δανάη')}">${fmtT(x.t)}</td><td class="small" data-l="Ημ/νία">${x.rec?fmtDate(x.rec.date):''}</td>
+     ${dcell(x.dA).replace('data-l=""','data-l="Διαφορά Α"')}${dcell(x.dB).replace('data-l=""','data-l="Διαφορά Β"')}</tr>`;
+  }
+  h+=`</tbody></table>${L.notes?`<div class="card small" style="margin-top:14px;white-space:pre-line"><h3>📋 Κριτήρια</h3>${esc(L.notes)}</div>`:''}`;
+  return h+printFoot();
+}
+function limForm(){
+  const L=S.limits;
+  openDlg(`<form id="frm"><h3>✏️ Αλλαγή ορίων</h3>
+    <label class="fld">Τίτλος<input name="title" value="${esc(L.title)}"></label>
+    <div class="muted small" style="margin:8px 0">Γράψε χρόνους π.χ. 31,19 ή 1:08,62. Άδειο = δεν υπάρχει όριο.</div>
+    <div style="overflow-x:auto"><table class="ltab"><tr><th>Αγώνισμα</th>${L.cols.map((c,i)=>`<th><input name="col${i}" value="${esc(c)}" style="width:120px;text-align:left"></th>`).join('')}</tr>
+    ${L.rows.map((r,j)=>`<tr><td><b>${r.dist}μ ${r.stroke}</b></td>${r.v.map((v,i)=>`<td><input name="v${j}_${i}" value="${v?fmtT(v):''}"></td>`).join('')}</tr>`).join('')}</table></div>
+    <label class="fld" style="margin-top:10px">Κριτήρια / σημειώσεις<textarea name="notes" rows="5">${esc(L.notes||'')}</textarea></label>
+    <div class="dlgbtns"><button type="button" class="btn light" data-act="close">Ακύρωση</button><button class="btn">💾 Αποθήκευση</button></div></form>`);
+  const f=document.getElementById('frm');
+  f.onsubmit=e=>{e.preventDefault(); let bad=null;
+    const rows=L.rows.map((r,j)=>({...r,v:r.v.map((_,i)=>{const t=parseT(f['v'+j+'_'+i].value); if(Number.isNaN(t)) bad=`${r.dist}μ ${r.stroke}`; return t;})}));
+    if(bad){alert('Λάθος χρόνος στο '+bad);return;}
+    L.rows=rows; L.cols=L.cols.map((_,i)=>f['col'+i].value.trim()); L.title=f.title.value.trim(); L.notes=f.notes.value;
+    save(); closeDlg(); render(); toast('✔ Τα όρια αποθηκεύτηκαν');};
+}
+
+/* ---------- TARGETS ---------- */
+function vTg(){
+  const R=records(), T=S.targets;
+  const g=(t,x)=>(!t||!x)?'<span class="empty">—</span>':`<span>${fmtT(x)} <span class="${t-x<=0?'good':'bad'} small">(${t-x<=0?'✅ ':''}${fmtDiff(t-x)})</span></span>`;
+  let h=printHead(T.title)+bar('🏆 '+esc(T.title),`<button class="btn light" data-act="editTg">✏️ Αλλαγή στόχων</button>`)+`
+   <div class="muted small" style="margin-bottom:8px">Σύγκριση των ρεκόρ σε πισίνα 50μ. Σε παρένθεση: πόσο απέχει (+ πιο αργή, − πιο γρήγορη).</div>
+   <table class="t cards"><thead><tr><th>Αγώνισμα</th><th class="num">${esc(S.athlete.first||'Δανάη')}</th><th>Τελευταία τελικής φάσης</th><th class="num">Συμμετ.</th><th>Τελευταία τελικού</th><th>Χρυσό</th></tr></thead><tbody>`;
+  for(const x of T.rows){ const r=R[ekey(50,x.stroke,x.dist)]; const t=r?.time;
+    h+=`<tr><td data-l="Αγώνισμα"><b>${x.dist}μ ${x.stroke}</b></td><td class="num tm" data-l="${esc(S.athlete.first||'Δανάη')}">${fmtT(t)}</td>
+      <td data-l="Τελευταία τελ. φάσης" class="${t&&x.lastFinal&&t<=x.lastFinal?'okc':''}">${g(t,x.lastFinal)}</td><td class="num" data-l="Συμμετέχουσες">${x.entrants??''}</td>
+      <td data-l="Τελευταία τελικού" class="${t&&x.lastA&&t<=x.lastA?'okc':''}">${g(t,x.lastA)}</td><td data-l="Χρυσό">${g(t,x.gold)}</td></tr>`;
+  }
+  return h+`</tbody></table>`+printFoot();
+}
+function tgForm(){
+  const T=S.targets;
+  openDlg(`<form id="frm"><h3>✏️ Αλλαγή στόχων</h3><label class="fld">Τίτλος<input name="title" value="${esc(T.title)}"></label>
+   <div style="overflow-x:auto;margin-top:10px"><table class="ltab"><tr><th>Αγώνισμα</th><th>Τελ. τελικής φάσης</th><th>Συμμετ.</th><th>Τελ. τελικού</th><th>Χρυσό</th></tr>
+   ${T.rows.map((r,j)=>`<tr><td><b>${r.dist}μ ${r.stroke}</b></td><td><input name="a${j}" value="${r.lastFinal?fmtT(r.lastFinal):''}"></td><td><input name="e${j}" type="number" value="${r.entrants??''}" style="width:60px"></td><td><input name="b${j}" value="${r.lastA?fmtT(r.lastA):''}"></td><td><input name="c${j}" value="${r.gold?fmtT(r.gold):''}"></td></tr>`).join('')}</table></div>
+   <div class="dlgbtns"><button type="button" class="btn light" data-act="close">Ακύρωση</button><button class="btn">💾 Αποθήκευση</button></div></form>`);
+  const f=document.getElementById('frm');
+  f.onsubmit=e=>{e.preventDefault(); let bad=null; const P=(v,n)=>{const t=parseT(v); if(Number.isNaN(t)) bad=n; return t;};
+    const rows=T.rows.map((r,j)=>({...r,lastFinal:P(f['a'+j].value,r.dist+'μ '+r.stroke),entrants:f['e'+j].value?+f['e'+j].value:null,lastA:P(f['b'+j].value,r.dist+'μ '+r.stroke),gold:P(f['c'+j].value,r.dist+'μ '+r.stroke)}));
+    if(bad){alert('Λάθος χρόνος στο '+bad);return;}
+    T.rows=rows; T.title=f.title.value.trim(); save(); closeDlg(); render(); toast('✔ Αποθηκεύτηκε');};
+}
+
+/* ---------- PROGRESS ---------- */
+function eventsWithData(){
+  const m=new Map();
+  S.individual.filter(r=>r.time).forEach(r=>{const k=ekey(r.pool,r.stroke,r.dist); if(!m.has(k)) m.set(k,[]); m.get(k).push(r);});
+  return m;
+}
+function vProg(){
+  const m=eventsWithData();
+  const keys=[...m.keys()].sort((a,b)=>{const [pa,sa,da]=a.split('|'),[pb,sb,db]=b.split('|'); return pb-pa||STROKES.indexOf(sa)-STROKES.indexOf(sb)||da-db;});
+  if(!chartSel||!m.has(chartSel)) chartSel=[...m.entries()].sort((a,b)=>b[1].length-a[1].length)[0]?.[0];
+  const [pool,stroke,dist]=chartSel?chartSel.split('|'):[];
+  let h=printHead('Πρόοδος – '+(chartSel?`${dist}μ ${stroke} (πισίνα ${pool}μ)`:''))+bar('📈 Πρόοδος')+`
+   <div class="filters noprint"><select data-chart="1">${keys.map(k=>{const [p,s,d]=k.split('|');return `<option value="${k}" ${k===chartSel?'selected':''}>${d}μ ${s} – πισίνα ${p}μ (${m.get(k).length})</option>`;}).join('')}</select></div>`;
+  if(chartSel) h+=`<div class="card chart">${chartSVG(m.get(chartSel),+pool,stroke,+dist)}</div>`;
+  h+=`<div class="sec-title">Βελτίωση ανά αγώνισμα</div><table class="t cards"><thead><tr><th>Αγώνισμα</th><th>Πισίνα</th><th class="num">Κούρσες</th><th class="num">Πρώτη φορά</th><th class="num">Ρεκόρ</th><th class="num">Βελτίωση</th></tr></thead><tbody>`;
+  for(const k of keys){ const arr=[...m.get(k)].sort((a,b)=>a.date<b.date?-1:1); const [p,s,d]=k.split('|');
+    const first=arr[0], best=arr.reduce((x,y)=>y.time<x.time?y:x); const imp=first.time-best.time;
+    h+=`<tr data-chartrow="${k}" style="cursor:pointer"><td data-l="Αγώνισμα"><b>${d}μ ${s}</b></td><td data-l="Πισίνα"><span class="pill ${p==25?'p25':''}">${p}μ</span></td><td class="num" data-l="Κούρσες">${arr.length}</td>
+     <td class="num" data-l="Πρώτη φορά"><span>${fmtT(first.time)} <span class="muted small">${fmtDate(first.date)}</span></span></td><td class="num tm" data-l="Ρεκόρ">${fmtT(best.time)}</td>
+     <td class="num ${imp>0?'good':''}" data-l="Βελτίωση"><span>${imp>0?'−'+fmtT(imp)+' <span class="small">('+(imp/first.time*100).toFixed(1).replace('.',',')+'%)</span>':'—'}</span></td></tr>`;
+  }
+  return h+`</tbody></table>`+printFoot();
+}
+function chartSVG(arr,pool,stroke,dist){
+  arr=[...arr].sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:0);
+  const W=820,H=360,L=70,Rm=20,T=20,B=50;
+  const lines=[];
+  if(pool===50){ const lr=S.limits.rows.find(x=>x.stroke===stroke&&x.dist===dist);
+    if(lr){ const a=lr.v[S.settings.limA], b=S.settings.limB>=0?lr.v[S.settings.limB]:null;
+      if(a) lines.push({v:a,c:'#16a34a',l:'Όριο Α'}); if(b) lines.push({v:b,c:'#f59e0b',l:'Όριο Β'}); } }
+  const xs=arr.map(r=>Date.parse(r.date)); let x0=Math.min(...xs), x1=Math.max(...xs); if(x1===x0){x0-=864e5*30;x1+=864e5*30;}
+  const ts=arr.map(r=>r.time).concat(lines.map(l=>l.v)); let y0=Math.min(...ts), y1=Math.max(...ts); const padY=Math.max((y1-y0)*0.12,50); y0-=padY; y1+=padY;
+  const X=t=>L+(t-x0)/(x1-x0)*(W-L-Rm), Y=v=>T+(v-y0)/(y1-y0)*(H-T-B); // faster (smaller) = higher
+  let s=`<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" font-family="system-ui,sans-serif">`;
+  for(let i=0;i<=4;i++){const v=y0+(y1-y0)*i/4, y=Y(v); s+=`<line x1="${L}" x2="${W-Rm}" y1="${y}" y2="${y}" stroke="#e3edf3"/><text x="${L-8}" y="${y+4}" font-size="12" text-anchor="end" fill="#6b7c8f">${fmtT(Math.round(v))}</text>`;}
+  const yr0=new Date(x0).getFullYear(), yr1=new Date(x1).getFullYear();
+  for(let y=yr0;y<=yr1+1;y++){ for(const mo of [0,6]){ const t=Date.UTC(y,mo,1); if(t<x0||t>x1) continue; const x=X(t);
+    s+=`<line x1="${x}" x2="${x}" y1="${T}" y2="${H-B}" stroke="#eef3f7"/><text x="${x}" y="${H-B+18}" font-size="12" text-anchor="middle" fill="#6b7c8f">${mo?'Ιούλ ':'Ιαν '}${y}</text>`; } }
+  lines.forEach((l,i)=>{const y=Y(l.v); s+=`<line x1="${L}" x2="${W-Rm}" y1="${y}" y2="${y}" stroke="${l.c}" stroke-width="2" stroke-dasharray="6 5"/><text x="${L+8+i*130}" y="${i?y+15:y-6}" font-size="12" fill="${l.c}" font-weight="700">${l.l} ${fmtT(l.v)}</text>`;});
+  // best-so-far line
+  let best=Infinity, bp=[]; arr.forEach(r=>{best=Math.min(best,r.time); bp.push([X(Date.parse(r.date)),Y(best)]);});
+  s+=`<polyline points="${bp.map(p=>p.join(',')).join(' ')}" fill="none" stroke="#13c4d6" stroke-width="3" stroke-linejoin="round" opacity=".5"/>`;
+  s+=`<polyline points="${arr.map(r=>X(Date.parse(r.date))+','+Y(r.time)).join(' ')}" fill="none" stroke="#13315c" stroke-width="2"/>`;
+  best=Infinity; const labs=[];
+  arr.forEach((r,i)=>{const isPB=r.time<best; best=Math.min(best,r.time); const x=X(Date.parse(r.date)), y=Y(r.time);
+    s+=`<circle cx="${x}" cy="${y}" r="${isPB?7:5}" fill="${isPB?'#f5b301':'#13315c'}" stroke="#fff" stroke-width="2"><title>${fmtDate(r.date)} · ${fmtT(r.time)} · ${esc(r.race)}</title></circle>`;
+    if(isPB||i===arr.length-1) labs.push({x,y,t:fmtT(r.time)});});
+  const placed=[];
+  labs.reverse().forEach(l=>{ let ly=l.y-12; if(placed.some(p=>Math.abs(p.x-l.x)<48&&Math.abs(p.y-ly)<15)) ly=l.y+22;
+    if(placed.some(p=>Math.abs(p.x-l.x)<48&&Math.abs(p.y-ly)<15)) return;
+    placed.push({x:l.x,y:ly}); s+=`<text x="${Math.min(Math.max(l.x,L+20),W-Rm-20)}" y="${ly}" font-size="12" text-anchor="middle" fill="#0b2545" font-weight="700">${l.t}</text>`;});
+  s+=`<text x="14" y="${(H-B)/2}" font-size="12" fill="#6b7c8f" transform="rotate(-90 14 ${(H-B)/2})" text-anchor="middle">↑ πιο γρήγορα</text></svg>`;
+  s+=`<div class="legend"><span><i style="background:#13315c"></i>Χρόνοι</span><span><i style="background:#13c4d6"></i>Καλύτερος μέχρι τότε</span><span>🟡 Νέο ρεκόρ</span>${lines.map(l=>`<span><i style="background:${l.c}"></i>${l.l}</span>`).join('')}</div>`;
+  return s;
+}
+
+/* ---------- CALENDAR ---------- */
+function vCal(){
+  const today=todayISO(); const ps=[...S.program].sort((a,b)=>a.start<b.start?-1:a.start>b.start?1:0);
+  const next=ps.find(p=>(p.end||p.start)>=today);
+  let h=printHead('Πρόγραμμα αγώνων')+bar('📅 Πρόγραμμα αγώνων',`<button class="btn aqua" data-act="addCal">+ Νέος αγώνας</button>`);
+  for(const p of ps){
+    const past=(p.end||p.start)<today; const dd=daysBetween(today,p.start);
+    const [y,mo,d]=p.start.split('-'); const [,,d2]=(p.end||p.start).split('-');
+    const has=S.individual.some(r=>r.date>=p.start&&r.date<=(p.end||p.start));
+    h+=`<div class="prog ${past?'past':''} ${p===next?'next':''}">
+      <div class="pdate"><b>${+d}${d2!==d?'–'+(+d2):''}</b><span>${MONTHS[+mo-1]} ${y}</span></div>
+      ${orgImg(p.org,'plogo')}
+      <div class="pbody"><div class="nm">${esc(p.race)}</div>
+        <div class="muted small">${esc(p.org)} · ${esc(p.place)}${p.region?' ('+esc(p.region)+')':''}${p.no?' · Α/Α '+esc(p.no):''}</div>
+        <div class="small">${esc(p.cats)}${p.notes?' · <i>'+esc(p.notes)+'</i>':''}</div></div>
+      <div class="pright">
+        <span class="cd">${past?(has?'✔ Αποτελέσματα':'Ολοκληρώθηκε'):dd<=0?'Τώρα!':dd===1?'Αύριο':'σε '+dd+' μέρες'}</span>
+        <span class="actions"><button class="ib" data-act="editCal" data-id="${p.id}">✏️</button><button class="ib" data-act="delCal" data-id="${p.id}">🗑️</button></span></div>
+    </div>`;
+  }
+  return h+printFoot();
+}
+function calForm(p){
+  const isNew=!p.id;
+  openDlg(`<form id="frm"><h3>${isNew?'➕ Νέος αγώνας στο πρόγραμμα':'✏️ Διόρθωση αγώνα'}</h3><div class="fgrid">
+    <label class="fld">Από<input type="date" name="start" required value="${p.start||''}"></label>
+    <label class="fld">Έως<input type="date" name="end" value="${p.end||''}"></label>
+    <label class="fld">Α/Α προγράμματος<input name="no" value="${esc(p.no??'')}"></label>
+    <label class="fld wide">Αγώνας<input name="race" required value="${esc(p.race||'')}"></label>
+    <label class="fld">Διοργανωτής<input name="org" list="dl-org" value="${esc(p.org||'')}"></label>
+    <label class="fld">Τόπος<input name="place" value="${esc(p.place||'')}"></label>
+    <label class="fld">Περιφέρεια<input name="region" value="${esc(p.region||'')}"></label>
+    <label class="fld wide">Κατηγορίες<input name="cats" value="${esc(p.cats||'')}"></label>
+    <label class="fld wide">Παρατηρήσεις<input name="notes" value="${esc(p.notes||'')}"></label>
+  </div>${dl('dl-org',orgNames())}
+  <div class="dlgbtns"><button type="button" class="btn light" data-act="close">Ακύρωση</button><button class="btn">💾 Αποθήκευση</button></div></form>`);
+  const f=document.getElementById('frm');
+  f.onsubmit=e=>{e.preventDefault();
+    const o={start:f.start.value,end:f.end.value||f.start.value,no:f.no.value.trim(),race:f.race.value.trim(),org:f.org.value.trim(),place:f.place.value.trim(),region:f.region.value.trim(),cats:f.cats.value.trim(),notes:f.notes.value.trim()};
+    if(o.end<o.start){alert('Η ημερομηνία λήξης είναι πριν την έναρξη.');return;}
+    if(isNew){o.id=uid();S.program.push(o);} else Object.assign(p,o);
+    save(); closeDlg(); render(); toast('✔ Αποθηκεύτηκε');};
+}
+
+/* ---------- SETTINGS ---------- */
+function imgBox(kind,label,src,round){
+  return `<div class="imgbox">${src?`<img class="pv ${round?'round':''}" src="${src}">`:`<div class="pv">🖼️</div>`}
+   <div class="lb"><b>${label}</b><div class="small muted">${src?'Υπάρχει':'Δεν έχει ανέβει ακόμα'}</div></div>
+   <button class="btn sm" data-img="${esc(kind)}">${src?'Αλλαγή':'Ανέβασμα'}</button>${src?`<button class="ib" data-imgdel="${esc(kind)}" title="Αφαίρεση">🗑️</button>`:''}</div>`;
+}
+function vSet(){
+  const a=S.athlete, im=S.images;
+  let h=`<div class="bar"><h2>⚙️ Ρυθμίσεις</h2></div>`+`
+  <div class="card"><h3>☁️ Αρχείο στο Google Drive</h3>
+   ${FSA?(fileHandle?`<p style="margin-top:0">Συνδεδεμένο με: <b>${esc(fileHandle.name)}</b> ${filePerm==='granted'?'<span class="good">✓ ενεργό</span>':'<span class="bad">— θέλει έγκριση</span>'}</p>
+     <p class="small muted">Κάθε αλλαγή γράφεται αμέσως σε αυτό το αρχείο. Όταν ανοίγεις το Πλετού, διαβάζει από εκεί τα πιο πρόσφατα.</p>
+     <div style="display:flex;gap:8px;flex-wrap:wrap">${filePerm!=='granted'?'<button class="btn" data-act="reconnect">🔗 Ενεργοποίηση</button>':''}<button class="btn light" data-act="linkOpen">🔄 Άλλο αρχείο</button><button class="btn light" data-act="unlink">✖ Αποσύνδεση</button></div>`
+     :`<p style="margin-top:0" class="small">Διάλεξε το αρχείο μέσα στον φάκελο <b>Google Drive</b> του υπολογιστή (από το πρόγραμμα «Google Drive για υπολογιστή»). Μετά, όλα σώζονται και διαβάζονται από εκεί αυτόματα.</p>
+     <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" data-act="linkNew">🆕 Δημιουργία αρχείου στο Drive</button><button class="btn light" data-act="linkOpen">📂 Σύνδεση με υπάρχον αρχείο</button></div>`)
+   :`<p style="margin-top:0" class="small">Σε αυτή τη συσκευή (κινητό) το αρχείο ανοίγει με το κουμπί <b>📂 Άνοιγμα αρχείου</b>: διάλεξε <b>Drive</b> και μετά το <b>Pletou_asfaleias.json</b>.</p>`}
+   <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+    <button class="btn light" data-act="openfile">📂 Άνοιγμα αρχείου</button>
+    <button class="btn light" data-act="backup">💾 Κατέβασμα αντιγράφου</button>
+    <button class="btn light" data-act="csv">📊 Εξαγωγή ατομικών σε Excel</button></div>
+   <div class="small muted" style="margin-top:8px">Τελευταία αλλαγή: ${S.savedAt?fmtDate(S.savedAt.slice(0,10))+' '+S.savedAt.slice(11,16)+' UTC':'—'}</div>
+  </div>
+  <div class="grid g2">
+   <div class="card"><h3>👧 Στοιχεία αθλήτριας</h3><form id="athF"><div class="fgrid">
+    <label class="fld">Όνομα<input name="first" value="${esc(a.first)}"></label>
+    <label class="fld">Επώνυμο<input name="last" value="${esc(a.last)}"></label>
+    <label class="fld">Χαϊδευτικό (τίτλος)<input name="nick" value="${esc(a.nick)}"></label>
+    <label class="fld">ΑΜ<input name="am" value="${esc(a.am)}"></label>
+    <label class="fld">Έτος γέννησης<input name="born" value="${esc(a.born)}"></label>
+    <label class="fld">Σωματείο<input name="club" value="${esc(a.club)}"></label>
+   </div><div class="dlgbtns"><button class="btn">💾 Αποθήκευση στοιχείων</button></div></form></div>
+   <div class="card"><h3>📸 Φωτογραφίες</h3>
+    ${imgBox('photo','Φωτογραφία '+(a.first||''),im.photo,true)}
+    ${imgBox('koe','Λογότυπο ΚΟΕ',im.koe)}
+    ${imgBox('club','Λογότυπο σωματείου ('+(a.club||'')+')',im.club)}
+    <div class="small muted">Εμφανίζονται πάνω στην οθόνη και σε όλες τις εκτυπώσεις.</div></div>
+  </div>
+  <div class="card"><h3>🏆 Λογότυπα διοργανωτών</h3>
+   <div class="small muted" style="margin-bottom:10px">Ανέβασε μία φορά το σήμα κάθε διοργανωτή και θα εμφανίζεται αυτόματα σε κάθε αγώνα του. (Η ΚΟΕ παίρνει το λογότυπο ΚΟΕ αν δεν βάλεις άλλο.)</div>
+   <div class="orglist">${orgNames().map(o=>imgBox('org:'+o,o,S.orgLogos[norm(o)])).join('')}</div>
+   <form id="orgF" style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap"><input name="o" placeholder="Νέος διοργανωτής..." style="padding:8px 10px;border:1px solid var(--line);border-radius:10px;flex:1;min-width:180px"><button class="btn sm">+ Προσθήκη</button></form>
+  </div>
+`;
+  return h;
+}
+
+/* ---------- images ---------- */
+let imgTarget=null;
+function resizeImage(file,max){
+  return new Promise((res,rej)=>{const fr=new FileReader(); fr.onload=()=>{const im=new Image(); im.onload=()=>{
+    const k=Math.min(1,max/Math.max(im.width,im.height)); const c=document.createElement('canvas'); c.width=Math.round(im.width*k); c.height=Math.round(im.height*k);
+    c.getContext('2d').drawImage(im,0,0,c.width,c.height); let u=c.toDataURL('image/webp',0.86); if(!u.startsWith('data:image/webp')) u=c.toDataURL('image/png'); res(u);};
+    im.onerror=()=>rej(); im.src=fr.result;}; fr.onerror=rej; fr.readAsDataURL(file);});
+}
+document.getElementById('imgIn').addEventListener('change',async e=>{
+  const file=e.target.files[0]; e.target.value=''; if(!file||!imgTarget) return;
+  try{ const url=await resizeImage(file,imgTarget==='photo'?600:300);
+    if(imgTarget.startsWith('org:')) S.orgLogos[norm(imgTarget.slice(4))]=url; else S.images[imgTarget]=url;
+    save(); render(); toast('✔ Η εικόνα ανέβηκε');
+  }catch(err){alert('Δεν μπόρεσα να διαβάσω αυτή την εικόνα.');}
+});
+
+/* ---------- backup ---------- */
+function download(name,content,type){const b=new Blob([content],{type}); const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download=name; document.body.appendChild(a); a.click(); setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},500);}
+function doBackup(){
+  S.lastBackup=new Date().toISOString(); S.dirty=false;
+  const t=todayISO();
+  download(`Pletou_asfaleias.json`,JSON.stringify(S),'application/json');
+  persist(); render(); toast('💾 Το αρχείο ασφαλείας κατέβηκε στα «Λήψεις» (Downloads)',4500);
+}
+document.getElementById('bkIn').addEventListener('change',e=>{
+  const file=e.target.files[0]; e.target.value=''; if(!file) return;
+  const fr=new FileReader(); fr.onload=()=>{ try{ const d=JSON.parse(fr.result);
+      if(d.app!=='Pletou'||!Array.isArray(d.individual)) throw 0;
+      if(d.savedAt!==S.savedAt&&!confirm(`Άνοιγμα αρχείου;\n\nΤα δεδομένα αυτής της συσκευής θα αντικατασταθούν με του αρχείου (${d.individual.length} ατομικά αποτελέσματα, τελευταία αλλαγή ${d.savedAt?fmtDate(d.savedAt.slice(0,10)):'—'}).`)) return;
+      S=d; S.settings=S.settings||{limA:3,limB:4}; S.dirty=false; persist(); if(fileHandle&&filePerm==='granted') writeFile(); render(); toast('✔ Φορτώθηκαν τα δεδομένα του αρχείου');
+    }catch(err){alert('Αυτό δεν είναι αρχείο ασφαλείας του Πλετού.');} };
+  fr.readAsText(file);
+});
+function doCSV(){
+  const q=v=>'"'+String(v??'').replace(/"/g,'""')+'"';
+  const rows=[['Ημερομηνία','Κατηγορία','Διοργανωτής','Αγώνας','Εγκατάσταση','Πισίνα','Στυλ','Μέτρα','Χρόνος','Θέση','Συμμετοχές','Παρατηρήσεις']];
+  [...S.individual].sort((a,b)=>a.date<b.date?-1:1).forEach(r=>rows.push([fmtDate(r.date),r.cat,r.org,r.race,r.venue,r.pool,r.stroke,r.dist,fmtT(r.time),r.place,r.entries,r.notes]));
+  download(`Pletou_atomika_${todayISO()}.csv`,'﻿'+rows.map(r=>r.map(q).join(';')).join('\r\n'),'text/csv;charset=utf-8');
+}
+
+/* ---------- Drive file link (File System Access, Chrome υπολογιστή) ---------- */
+function idb(){return new Promise((res,rej)=>{const r=indexedDB.open('pletou_fs',1); r.onupgradeneeded=()=>r.result.createObjectStore('kv'); r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error);});}
+async function kvGet(k){try{const db=await idb(); return await new Promise(res=>{const q=db.transaction('kv').objectStore('kv').get(k); q.onsuccess=()=>res(q.result); q.onerror=()=>res(null);});}catch(e){return null;}}
+async function kvSet(k,v){try{const db=await idb(); await new Promise(res=>{const tx=db.transaction('kv','readwrite'); const st=tx.objectStore('kv'); v==null?st.delete(k):st.put(v,k); tx.oncomplete=res; tx.onerror=res;});}catch(e){}}
+const JSONTYPE=[{description:'Αρχείο Πλετού',accept:{'application/json':['.json']}}];
+async function initFile(){
+  if(!FSA) return;
+  fileHandle=await kvGet('handle'); if(!fileHandle) return;
+  try{ filePerm=await fileHandle.queryPermission({mode:'readwrite'}); }catch(e){ filePerm='prompt'; }
+  if(filePerm==='granted') await syncFromFile(false);
+  render();
+}
+async function connectExisting(){
+  try{ const [h]=await window.showOpenFilePicker({types:JSONTYPE}); await useHandle(h,true); }
+  catch(e){ if(e.name!=='AbortError') alert('Δεν έγινε σύνδεση: '+e.message); }
+}
+async function connectNew(){
+  try{ const h=await window.showSaveFilePicker({suggestedName:'Pletou_asfaleias.json',types:JSONTYPE}); await useHandle(h,false); }
+  catch(e){ if(e.name!=='AbortError') alert('Δεν έγινε σύνδεση: '+e.message); }
+}
+async function useHandle(h,readFirst){
+  fileHandle=h; await kvSet('handle',h);
+  filePerm=await h.queryPermission({mode:'readwrite'});
+  if(filePerm!=='granted') filePerm=await h.requestPermission({mode:'readwrite'});
+  if(filePerm==='granted'){ if(readFirst) await syncFromFile(true); else { await writeFile(); toast('☁️ Το αρχείο φτιάχτηκε: '+esc(h.name)); } }
+  render();
+}
+async function reconnect(){
+  if(!fileHandle) return;
+  try{ filePerm=await fileHandle.requestPermission({mode:'readwrite'}); }catch(e){ filePerm='prompt'; }
+  if(filePerm==='granted') await syncFromFile(false);
+  render();
+}
+async function readFileData(){
+  const f=await fileHandle.getFile(); const txt=await f.text(); if(!txt.trim()) return null;
+  const d=JSON.parse(txt); if(d.app!=='Pletou'||!Array.isArray(d.individual)) throw new Error('δεν είναι αρχείο του Πλετού'); return d;
+}
+async function syncFromFile(firstLink){
+  let d;
+  try{ d=await readFileData(); }catch(e){ if(e.name==='NotAllowedError'){filePerm='prompt';return;} alert('Πρόβλημα με το αρχείο '+fileHandle.name+': '+e.message); return; }
+  if(!d){ await writeFile(); return; }
+  const ft=d.savedAt||'', lt=S.savedAt||'';
+  if(ft===lt){ return; }
+  let takeFile = ft>lt;
+  if(firstLink) takeFile=confirm(`Ποια δεδομένα να κρατήσω;\n\nΑρχείο Drive: ${d.individual.length} ατομικά, αλλαγή ${ft?fmtDate(ft.slice(0,10)):'—'}\nΑυτός ο υπολογιστής: ${S.individual.length} ατομικά, αλλαγή ${lt?fmtDate(lt.slice(0,10)):'—'}\n\nOK = του αρχείου Drive · Άκυρο = του υπολογιστή`);
+  if(takeFile){ S=d; S.settings=S.settings||{limA:3,limB:4}; S.orgsExtra=S.orgsExtra||[]; S.images=S.images||{}; S.orgLogos=S.orgLogos||{}; S.dirty=false; persist(); toast('☁️ Φορτώθηκαν τα πιο πρόσφατα από το Drive'); }
+  else await writeFile();
+}
+let wTimer=null, writing=Promise.resolve();
+function scheduleWrite(){ if(!fileHandle||filePerm!=='granted') return; clearTimeout(wTimer); wTimer=setTimeout(()=>{writing=writing.then(writeFile);},700); }
+async function writeFile(){
+  if(!fileHandle||filePerm!=='granted') return false;
+  try{ const w=await fileHandle.createWritable(); await w.write(JSON.stringify({...S,dirty:false})); await w.close();
+       S.dirty=false; S.lastBackup=new Date().toISOString(); persist(); renderHeader(); return true; }
+  catch(e){ console.warn(e); filePerm='prompt'; renderHeader(); toast('⚠️ Δεν μπόρεσα να γράψω στο αρχείο του Drive. Πάτα «Σύνδεση».',5000); return false; }
+}
+window.addEventListener('focus',async()=>{ if(fileHandle&&filePerm==='granted'&&!S.dirty){ const before=S.savedAt; await syncFromFile(false); if(S.savedAt!==before) render(); } });
+
+/* ---------- print ---------- */
+function doPrint(o){
+  let st=document.getElementById('pgsize'); if(!st){st=document.createElement('style');st.id='pgsize';document.head.appendChild(st);}
+  st.textContent=`@media print{@page{size:A4 ${o==='landscape'?'landscape':'portrait'};margin:10mm}}`;
+  document.body.classList.toggle('land',o==='landscape');
+  window.print();
+}
+
+/* ---------- dialog ---------- */
+function openDlg(html){const d=document.getElementById('dlg'); document.getElementById('dlgin').innerHTML=html; if(!d.open) d.showModal();}
+function closeDlg(){document.getElementById('dlg').close();}
+
+/* ---------- events ---------- */
+document.addEventListener('click',e=>{
+  const t=e.target.closest('[data-tab],[data-act],[data-img],[data-imgdel],[data-chartrow]'); if(!t) return;
+  if(t.dataset.tab){e.preventDefault(); tab=t.dataset.tab; render(); window.scrollTo(0,0); return;}
+  if(t.dataset.chartrow){chartSel=t.dataset.chartrow; render(); window.scrollTo({top:0,behavior:'smooth'}); return;}
+  if(t.dataset.img){imgTarget=t.dataset.img; document.getElementById('imgIn').click(); return;}
+  if(t.dataset.imgdel){const k=t.dataset.imgdel; if(!confirm('Να αφαιρεθεί η εικόνα;')) return; if(k.startsWith('org:')) delete S.orgLogos[norm(k.slice(4))]; else delete S.images[k]; save(); render(); return;}
+  const id=t.dataset.id, act=t.dataset.act;
+  const find=(arr)=>arr.find(x=>x.id===id);
+  const del=(key,label)=>{const r=find(S[key]); if(r&&confirm(`Διαγραφή;\n\n${label(r)}`)){S[key]=S[key].filter(x=>x!==r); save(); render(); toast('🗑️ Διαγράφηκε');}};
+  switch(act){
+    case 'print': doPrint(t.dataset.o); break;
+    case 'reconnect': reconnect(); break;
+    case 'linkOpen': connectExisting(); break;
+    case 'linkNew': connectNew(); break;
+    case 'unlink': if(confirm('Αποσύνδεση από το αρχείο; (Το αρχείο στο Drive δεν σβήνεται.)')){fileHandle=null;filePerm='none';kvSet('handle',null);render();} break;
+    case 'openfile': document.getElementById('bkIn').click(); break;
+    case 'toggleEmpty': S.settings.hideEmpty=!S.settings.hideEmpty; persist(); render(); break;
+    case 'close': closeDlg(); break;
+    case 'backup': doBackup(); break;
+    case 'restore': document.getElementById('bkIn').click(); break;
+    case 'csv': doCSV(); break;
+    case 'addInd': indForm({}); break;
+    case 'editInd': indForm(find(S.individual)); break;
+    case 'delInd': del('individual',r=>`${fmtDate(r.date)} · ${evName(r)} · ${fmtT(r.time)}\n${r.race}`); break;
+    case 'addRel': relForm({}); break;
+    case 'editRel': relForm(find(S.relays)); break;
+    case 'delRel': del('relays',r=>`${fmtDate(r.date)} · ${r.event} · ${fmtT(r.time)}`); break;
+    case 'addCal': calForm({}); break;
+    case 'editCal': calForm(find(S.program)); break;
+    case 'delCal': del('program',r=>`${fmtDate(r.start)} · ${r.race}`); break;
+    case 'editLim': limForm(); break;
+    case 'editTg': tgForm(); break;
+  }
+});
+document.addEventListener('change',e=>{
+  const t=e.target;
+  if(t.dataset.f!==undefined&&t.dataset.f!=='q'){F[t.dataset.f]=t.value; render();}
+  if(t.dataset.lim){S.settings[t.dataset.lim]=+t.value; save(); render();}
+  if(t.dataset.chart){chartSel=t.value; render();}
+});
+document.addEventListener('input',e=>{
+  const t=e.target; if(t.dataset.f==='q'){F.q=t.value; const pos=t.selectionStart; render(); const n=document.querySelector('[data-f="q"]'); n.focus(); n.setSelectionRange(pos,pos);}
+});
+document.addEventListener('submit',e=>{
+  if(e.target.id==='athF'){e.preventDefault(); const f=e.target; ['first','last','nick','am','born','club'].forEach(k=>S.athlete[k]=f[k].value.trim()); save(); render(); toast('✔ Αποθηκεύτηκαν τα στοιχεία');}
+  if(e.target.id==='orgF'){e.preventDefault(); const v=e.target.o.value.trim(); if(v&&!orgNames().some(o=>norm(o)===norm(v))){S.orgsExtra.push(v); save(); render();}}
+});
+
+load(); render(); initFile();
+if('serviceWorker' in navigator && location.protocol==='https:') navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script>
+</body>
+</html>
